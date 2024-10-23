@@ -18,7 +18,7 @@ spring:
             client-id: 59227961584-giq4c5ifot0hqsivfjdapqug5lbgabfe
             client-secret: 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
             scope: profile, email
-            redirect-uri: https://co3103-programming-intergration-project-fl06.onrender.com/api/v1/users/custom-oauth-callback
+            redirect-uri: https://co3001-software-engineering-internal-kw83.onrender.com/api/v1/users/custom-oauth-callback
             client-name: Google
         provider:
           google:
