@@ -18,7 +18,12 @@ public class File {
     private String name;
     private LocalDateTime uploadDate;
     private String url;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "format_id")
     private FileFormat fileFormat;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "student_id")
+    private Student student;
 }
