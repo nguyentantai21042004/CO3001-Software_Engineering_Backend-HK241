@@ -150,7 +150,6 @@ CREATE TABLE payments(
 	student_id INT NOT NULL,
     balance INT NOT NULL CHECK (balance > 0),
 	amount INT NOT NULL CHECK (amount > 0),
-	description VARCHAR(255),
 	method VARCHAR(20) NOT NULL,
 	transaction_date DATETIME NOT NULL DEFAULT (CURRENT_TIMESTAMP),
 	status VARCHAR(15) NOT NULL CHECK (status IN ('in progress', 'successful', 'failed')) DEFAULT 'in progress',
