@@ -61,7 +61,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
                 // Phân loại user theo userType
                 switch (userType) {
-                    case "student":
+                    case "STUDENT":
                         userDetails = (Student) userDetailsService.loadUserByUsername(email);
                         break;
 //                    case "admin":
