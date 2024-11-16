@@ -246,13 +246,32 @@ END $$
 DELIMITER ;
 
 --
--- Auto check allocate pages by day
+-- Trigger to update printer status to inactive when remaining_pages reaches 0
+--
+
+DELIMITER $$
+
+CREATE TRIGGER update_printer_status_inactive
+BEFORE UPDATE ON printers
+FOR EACH ROW
+BEGIN
+    -- Check if the remaining pages are set to 0
+    IF NEW.remaining_pages = 0 THEN
+        -- Update the status of the printer to 'inactive'
+        SET NEW.status = 'inactive';
+    END IF;
+END $$
+
+DELIMITER ;
+
+--
+-- Event to update page_allocations status
 --
 
 DELIMITER $$
 CREATE EVENT IF NOT EXISTS allocate_pages_daily
 ON SCHEDULE EVERY 1 DAY
-STARTS (TIMESTAMP(CURRENT_DATE) + INTERVAL 1 DAY) -- check at '00:00:00'
+STARTS (TIMESTAMP(CURRENT_DATE) + INTERVAL 7 HOUR + INTERVAL 1 DAY) -- check at '00:00:00' gmt+7
 DO
 BEGIN
     -- Update page_allocations
