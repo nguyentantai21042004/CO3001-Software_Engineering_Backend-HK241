@@ -81,6 +81,7 @@ public class PrinterService implements IPrinterService {
             printer.setSupportContact(updatedPrinter.getSupportContact());
             printer.setLastMaintenanceDate(updatedPrinter.getLastMaintenanceDate());
             printer.setStatus(updatedPrinter.getStatus());
+            printer.setRemainingPages(updatedPrinter.getRemainingPages()); // Set remaining pages
             printer.setLocation(updatedPrinter.getLocation());
             printer.setSpso(updatedPrinter.getSpso());
 
