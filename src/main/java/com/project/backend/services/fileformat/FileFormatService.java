@@ -1,64 +1,38 @@
 package com.project.backend.services.fileformat;
 
+import com.project.backend.dataTranferObjects.FileFormatDTO;
 import com.project.backend.exceptions.DataNotFoundException;
 import com.project.backend.models.FileFormat;
 import com.project.backend.repositories.FileFormatRepository;
-import com.project.backend.responses.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class FileFormatService implements IFileFormatService{
     @Autowired
     private FileFormatRepository fileFormatRepository;
     @Override
-    public ResponseObject getAllFileFormats() {
-        ResponseObject response = new ResponseObject();
-        try{
-            List<FileFormat> fileTypeList = fileFormatRepository.findAll();
-
-            response.setData(fileTypeList);
-            response.setStatus(HttpStatus.OK);
-            response.setMessage("Get all file format successfully");
-        } catch (Exception e){
-           response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-           response.setMessage(e.getMessage());
-        }
-        return response;
+    public Page<FileFormat> getAllFileFormats(Pageable pageable) {
+        return fileFormatRepository.findAll(pageable);
     }
 
     @Override
-    public ResponseObject addFileFormat(FileFormat newFormat) {
-        ResponseObject response = new ResponseObject();
-        try{
-            if(fileFormatRepository.existsByName(newFormat.getName())) throw new Exception("This file format already existed");
-            fileFormatRepository.save(newFormat);
+    public FileFormat addFileFormat(FileFormatDTO newFormatDTO) throws Exception {
 
-            response.setStatus(HttpStatus.CREATED);
-            response.setMessage("Add new format successfully");
-        } catch(Exception e){
-            response.setStatus(HttpStatus.CONFLICT);
-            response.setMessage(e.getMessage());
-        }
-        return response;
+        if(fileFormatRepository.existsByName(newFormatDTO.getName())) throw new Exception("This file format already existed");
+        FileFormat newFileFormat =  FileFormat.builder()
+                .name(newFormatDTO.getName())
+                .build();
+
+        return fileFormatRepository.save(newFileFormat);
     }
 
     @Override
-    public ResponseObject deleteFileFormat(Integer fileFormatId) {
-        ResponseObject response = new ResponseObject();
-        try{
+    public void deleteFileFormat(Integer fileFormatId) throws Exception{
+
             if(!fileFormatRepository.existsById(fileFormatId)) throw new DataNotFoundException("File format not found");
             fileFormatRepository.deleteById(fileFormatId);
-
-            response.setStatus(HttpStatus.OK);
-            response.setMessage("Delete file format successfully");
-        } catch(Exception e){
-            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-        }
-        return response;
     }
 }

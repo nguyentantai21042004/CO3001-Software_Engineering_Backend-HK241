@@ -1,6 +1,5 @@
 package com.project.backend.services.payment;
 
-import com.project.backend.models.Payment;
 import com.project.backend.responses.ResponseObject;
 
 public interface IPaymentService {

@@ -20,16 +20,17 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class StudentService implements IStudentService{
+public class StudentService implements IStudentService {
     private final JwtTokenUtils jwtTokenUtil;
     private final StudentRepository studentRepository;
     private final RoleRepository roleRepository;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
 
-//    private Integer defaultBalance = 10;
+    // private Integer defaultBalance = 10;
 
-    private String getWebPassword(){
+    // Giá trị mặc định cho mật khẩu nếu chưa có mật khẩu nào khác
+    private String getWebPassword() {
         String defaultPassword = "@hcmut.edu.vn";
         return passwordEncoder.encode(defaultPassword);
     }
@@ -53,55 +54,60 @@ public class StudentService implements IStudentService{
     public String login(StudentLoginDTO studentLoginDTO) throws Exception {
         Optional<Student> optionalStudent = studentRepository.findByEmail(studentLoginDTO.getEmail());
         Student existingStudent;
-        String subject = null;
+        Role existingRole = roleRepository.findByName(Role.STUDENT);
 
-        Role defaultRole = roleRepository.findByName(Role.STUDENT);
+        if (existingRole == null) {
+            throw new RuntimeException("Role STUDENT not found");
+        }
 
+        // Tạo mới Student nếu chưa tồn tại
         if (optionalStudent.isEmpty()) {
-            // Tạo mới Student nếu chưa tồn tại và gán Role STUDENT
             Student newStudent = Student.builder()
                     .fullName(studentLoginDTO.getName())
                     .email(studentLoginDTO.getEmail())
-                    .studentBalance(100)
-                    .role(defaultRole)
+                    .studentBalance(100) // Số dư mặc định
+                    .role(existingRole)
                     .password(getWebPassword())
                     .joinDate(LocalDateTime.now())
                     .lastLogin(LocalDateTime.now())
                     .build();
 
-            subject = newStudent.getEmail();
             existingStudent = studentRepository.save(newStudent);
         } else {
             existingStudent = optionalStudent.get();
-            subject = existingStudent.getEmail();
-            // Nếu Student đã tồn tại nhưng chưa có Role, gán Role mặc định
+            existingStudent.setLastLogin(LocalDateTime.now());
+
             if (existingStudent.getRole() == null) {
-                existingStudent.setRole(defaultRole);
+                existingStudent.setRole(existingRole);
                 studentRepository.save(existingStudent);
             }
         }
 
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(
-                        subject,
-                        "@hcmut.edu.vn",
-                        existingStudent.getAuthorities()
-                );
-
+        // Xác thực người dùng
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                existingStudent.getEmail(),
+                "@hcmut.edu.vn", // Sử dụng mật khẩu mặc định đã mã hóa
+                existingStudent.getAuthorities());
         authenticationManager.authenticate(authenticationToken);
 
-        return jwtTokenUtil.generateToken(existingStudent);
+        // Tạo token JWT với thông tin cần thiết
+        String jwtToken = jwtTokenUtil.generateToken(
+                existingStudent.getStudentId(), // userId
+                existingRole.getName(), // role
+                existingStudent.getEmail() // userName (ưu tiên email)
+        );
+
+        return jwtToken;
     }
 
     @Override
     public Student getStudentDetailsByExtractingToken(String token) throws Exception {
-        if(jwtTokenUtil.isTokenExpired(token)) {
+        if (jwtTokenUtil.isTokenExpired(token)) {
             throw new ExpiredTokenException("Token is expired");
         }
 
         String subject = jwtTokenUtil.getSubject(token);
-        Optional<Student> student;
-        student = studentRepository.findByEmail(subject);
+        Optional<Student> student = studentRepository.findByEmail(subject);
         return student.orElseThrow(() -> new Exception("Student not found"));
     }
 }

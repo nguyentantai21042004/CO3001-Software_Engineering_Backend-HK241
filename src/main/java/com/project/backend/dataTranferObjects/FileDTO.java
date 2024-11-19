@@ -1,6 +1,7 @@
 package com.project.backend.dataTranferObjects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.backend.models.FileFormat;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -16,12 +17,15 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class FileDTO {
-    private Integer id;
+    @JsonProperty("size")
     private String size;
+    @JsonProperty("name")
     private String name;
+    @JsonProperty("upload_date")
     private LocalDateTime uploadDate;
+    @JsonProperty("url")
     private String url;
+    @JsonProperty("file_format")
     private FileFormat fileFormat;
 }
