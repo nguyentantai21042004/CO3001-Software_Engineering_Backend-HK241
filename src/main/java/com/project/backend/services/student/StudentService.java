@@ -57,7 +57,7 @@ public class StudentService implements IStudentService {
         Role existingRole = roleRepository.findByName(Role.STUDENT);
 
         if (existingRole == null) {
-            throw new RuntimeException("Role STUDENT not found");
+            throw new Exception("Role STUDENT not found");
         }
 
         // Tạo mới Student nếu chưa tồn tại

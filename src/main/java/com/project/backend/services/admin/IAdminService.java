@@ -17,7 +17,7 @@ public interface IAdminService {
 
     SPSO getUserDetailsFromToken(String token) throws Exception;
 
-    SPSO createSPSO(SPSOCreateDTO spsoCreateDTO);
+    SPSO createSPSO(SPSOCreateDTO spsoCreateDTO) throws Exception;
 
     SPSO updateUser(Long userId, UpdateUserDTO updatedUserDTO) throws Exception;
 }

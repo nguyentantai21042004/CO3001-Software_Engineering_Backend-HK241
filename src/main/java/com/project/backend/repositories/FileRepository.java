@@ -13,4 +13,5 @@ import java.util.List;
 public interface FileRepository extends JpaRepository<File, Integer> {
     @Query(value = "SELECT * FROM files WHERE student_id = :studentId", nativeQuery = true)
     Page<File> findAllFilesByStudentId(Integer studentId, Pageable pageable);
+    Optional<File> findById(Integer id);
 }

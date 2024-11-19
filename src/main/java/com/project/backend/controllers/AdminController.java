@@ -39,6 +39,7 @@ import jakarta.validation.Valid;
 public class AdminController {
         private final IAdminService adminService;
 
+        // Get all SPSO
         @GetMapping("/get")
         @PreAuthorize("hasRole('ADMIN')")
         public ResponseEntity<ResponseObject> getSPSO(
@@ -64,6 +65,7 @@ public class AdminController {
                                 .build());
         }
 
+        // Login
         @PostMapping("/login")
         public ResponseEntity<ResponseObject> login(@Valid @RequestBody AdminLoginDTO adminLoginDTO,
                         BindingResult bindingResult) throws Exception {
@@ -90,10 +92,11 @@ public class AdminController {
                                 .build());
         }
 
+        // Create SPSO
         @PostMapping("/spso/create")
         @PreAuthorize("hasRole('ADMIN')")
         public ResponseEntity<ResponseObject> createSPSO(@Valid @RequestBody SPSOCreateDTO spsoCreateDTO,
-                        BindingResult bindingResult) {
+                        BindingResult bindingResult) throws Exception {
                 if (bindingResult.hasErrors()) {
                         return ResponseEntity.badRequest().body(ResponseObject.builder()
                                         .message("admin.spso.create_failed")
@@ -110,6 +113,7 @@ public class AdminController {
                                 .build());
         }
 
+        // Update SPSO
         @PutMapping("/detail/{user_id}")
         @PreAuthorize("hasRole('ADMIN') or hasRole('SPSO')")
         public ResponseEntity<ResponseObject> updateUserDetail(

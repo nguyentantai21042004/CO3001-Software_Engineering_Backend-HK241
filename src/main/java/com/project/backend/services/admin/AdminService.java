@@ -41,20 +41,20 @@ public class AdminService implements IAdminService {
         // Tìm kiếm người dùng SPSO theo username
         Optional<SPSO> optionalSPSO = spsoRepository.findByUsername(adminLoginDTO.getUsername());
         if (!optionalSPSO.isPresent()) {
-            throw new RuntimeException("SPSO not found");
+            throw new Exception("SPSO not found");
         }
 
         SPSO existingSPSO = optionalSPSO.get();
 
         // Xác minh mật khẩu
         if (!passwordEncoder.matches(adminLoginDTO.getPassword(), existingSPSO.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new Exception("Invalid password");
         }
 
         // Kiểm tra vai trò
         Role defaultRole = roleRepository.findByName(adminLoginDTO.getRole());
         if (defaultRole == null) {
-            throw new RuntimeException("Role not found");
+            throw new Exception("Role not found");
         }
 
         // Xác thực với AuthenticationManager
@@ -80,20 +80,20 @@ public class AdminService implements IAdminService {
     }
 
     @Override
-    public SPSO createSPSO(SPSOCreateDTO spsoCreateDTO) {
+    public SPSO createSPSO(SPSOCreateDTO spsoCreateDTO) throws Exception {
         Role existingRole = roleRepository.findByName("SPSO");
         if (existingRole == null) {
-            throw new RuntimeException("Role not found");
+            throw new Exception("Role not found");
         }
 
         Optional<SPSO> existingSPSO;
         existingSPSO = spsoRepository.findByEmail(spsoCreateDTO.getEmail());
         if (existingSPSO.isPresent()) {
-            throw new RuntimeException("SPSO already exists");
+            throw new Exception("SPSO already exists");
         }
         existingSPSO = spsoRepository.findByUsername(spsoCreateDTO.getUsername());
         if (existingSPSO.isPresent()) {
-            throw new RuntimeException("SPSO username already exists");
+            throw new Exception("SPSO username already exists");
         }
 
         SPSO newSPSO = SPSO.builder()
