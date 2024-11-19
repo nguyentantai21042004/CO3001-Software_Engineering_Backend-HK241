@@ -5,6 +5,7 @@ import com.project.backend.responses.ResponseObject;
 import com.project.backend.services.pageallocation.PageAllocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class PageAllocationController {
 
     // Create a new page allocation
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponseObject> createPageAllocation(@RequestBody PageAllocation pageAllocation) {
         ResponseObject response = pageAllocationService.createPageAllocation(pageAllocation);
         return ResponseEntity.status(response.getStatus()).body(response);
@@ -26,7 +28,8 @@ public class PageAllocationController {
 
     // Update an existing page allocation (only if status is 'pending')
     @PutMapping("/{id}")
-    public ResponseEntity<?> updatePageAllocation(@PathVariable Long id, @RequestBody PageAllocation updatedAllocation) {
+    public ResponseEntity<?> updatePageAllocation(@PathVariable Long id,
+            @RequestBody PageAllocation updatedAllocation) {
         Optional<PageAllocation> result = pageAllocationService.updatePageAllocation(id, updatedAllocation);
         if (result.isPresent()) {
             return ResponseEntity.ok(result.get());

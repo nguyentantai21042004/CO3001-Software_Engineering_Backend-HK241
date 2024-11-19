@@ -36,5 +36,5 @@ public class PageAllocation {
     @ManyToOne
     @JoinColumn(name = "spso_id", foreignKey = @ForeignKey(name = "page_allocation_spso_id_fk"))
     @OnDelete(action = OnDeleteAction.SET_NULL) // Correct usage of @OnDelete
-    private Spso spso;
+    private SPSO spso;
 }
