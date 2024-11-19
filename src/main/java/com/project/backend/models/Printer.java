@@ -1,8 +1,10 @@
 package com.project.backend.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -34,6 +36,11 @@ public class Printer {
 
     @Column(name = "last_maintenance_date")
     private LocalDateTime lastMaintenanceDate;
+
+    // New field for remaining pages
+    @Min(value = 0, message = "Remaining pages must be greater than or equal to 0")
+    @Column(name = "remaining_pages", nullable = false)
+    private int remainingPages;
 
     // Enum for status
     @Enumerated(EnumType.STRING)

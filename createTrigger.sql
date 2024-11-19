@@ -131,7 +131,7 @@ END $$
 DELIMITER ;
 
 --
--- Trigger to update student_balance when file_allocation_status is updated to 'allocated'
+-- Trigger to update student_balance when page_allocation_status is updated to 'allocated'
 --
 
 DELIMITER $$
@@ -144,8 +144,57 @@ BEGIN
     IF NEW.status = 'allocated' AND OLD.status != 'allocated' THEN
         -- Increase the student's balance by the number of allocated pages
         UPDATE students
-        SET student_balance = student_balance + NEW.number_of_pages
-        WHERE id = NEW.spso_id;  -- Assuming spso_id is linked to student_id
+        SET student_balance = student_balance + NEW.number_of_pages;
+    END IF;
+END $$
+
+DELIMITER ;
+
+--
+-- Trigger to update student_balance when page_allocation_status is 'allocated'
+--
+
+DELIMITER $$
+
+CREATE TRIGGER increase_student_balance_after_insert
+AFTER INSERT ON page_allocations
+FOR EACH ROW
+BEGIN
+    -- Check if the inserted status is 'allocated'
+    IF NEW.status = 'allocated' THEN
+        -- Increase the student's balance by the number of allocated pages
+        UPDATE students
+        SET student_balance = student_balance + NEW.number_of_pages;
+    END IF;
+END $$
+
+DELIMITER ;
+
+--
+-- Trigger to check if the date column
+-- If the date is less than the current date (CURDATE()), an error is raised (as before).
+-- If the date is equal to the current date, the status is automatically set to 'allocated'.
+-- If the date is greater than the current date (a future date), the status is set to 'pending'.
+--
+
+DELIMITER $$
+
+CREATE TRIGGER check_page_allocation_date
+BEFORE INSERT ON page_allocations
+FOR EACH ROW
+BEGIN
+    -- If the date is in the past, raise an error
+    IF NEW.date < CURDATE() THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot insert a page allocation with a date in the past';
+
+    -- If the date is today, automatically set status to 'allocated'
+    ELSEIF NEW.date = CURDATE() THEN
+        SET NEW.status = 'allocated';
+
+    -- If the date is in the future, set status to 'pending'
+    ELSEIF NEW.date > CURDATE() THEN
+        SET NEW.status = 'pending';
     END IF;
 END $$
 
@@ -196,3 +245,41 @@ END $$
 
 DELIMITER ;
 
+--
+-- Trigger to update printer status to inactive when remaining_pages reaches 0
+--
+
+DELIMITER $$
+
+CREATE TRIGGER update_printer_status_inactive
+BEFORE UPDATE ON printers
+FOR EACH ROW
+BEGIN
+    -- Check if the remaining pages are set to 0
+    IF NEW.remaining_pages = 0 THEN
+        -- Update the status of the printer to 'inactive'
+        SET NEW.status = 'inactive';
+    END IF;
+END $$
+
+DELIMITER ;
+
+--
+-- Event to update page_allocations status
+--
+
+DELIMITER $$
+CREATE EVENT IF NOT EXISTS allocate_pages_daily
+ON SCHEDULE EVERY 1 DAY
+STARTS (TIMESTAMP(CURRENT_DATE) + INTERVAL 7 HOUR + INTERVAL 1 DAY) -- check at '00:00:00' gmt+7
+DO
+BEGIN
+    -- Update page_allocations
+    UPDATE page_allocations
+    SET status = 'allocated'
+    WHERE status = 'pending'
+      AND date = CURDATE();
+
+END$$
+
+DELIMITER ;
