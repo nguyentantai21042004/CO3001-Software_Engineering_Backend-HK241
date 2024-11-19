@@ -29,15 +29,15 @@ public class PaymentService implements IPaymentService {
     private MoMoService moMoService;
 
     // Constants defined within the service class
-    private static final int A4_BALANCES = 1;           // Balance for A4 paper
-    private static final int A3_BALANCES = 2;           // Balance for A3 paper
-    private static final int COST_PER_BALANCE = 500;    // Cost per balance
+    private static final int A4_BALANCES = 1; // Balance for A4 paper
+    private static final int A3_BALANCES = 2; // Balance for A3 paper
+    private static final int COST_PER_BALANCE = 500; // Cost per balance
 
     public ResponseObject createPayment(Integer studentId, int a4Count, int a3Count, String method, String orderInfo) {
         ResponseObject response = new ResponseObject();
         try {
             // Fetch the student based on studentId
-            Optional<Student> studentOpt = studentRepository.findById(studentId);
+            Optional<Student> studentOpt = studentRepository.findById(studentId.longValue());
             if (studentOpt.isEmpty()) {
                 response.setStatus(HttpStatus.BAD_REQUEST);
                 response.setMessage("Student not found.");
@@ -55,7 +55,8 @@ public class PaymentService implements IPaymentService {
             }
             if (totalPoints < 2) {
                 response.setStatus(HttpStatus.BAD_REQUEST);
-                response.setMessage("The request was denied because the transaction amount is less than the minimum allowed amount of 1000 VND");
+                response.setMessage(
+                        "The request was denied because the transaction amount is less than the minimum allowed amount of 1000 VND");
                 return response;
             }
 
@@ -73,7 +74,8 @@ public class PaymentService implements IPaymentService {
             payment.setRequestId(requestId);
             paymentRepository.save(payment);
 
-            Map<String, Object> moMoResponse = moMoService.createMoMoPayment(orderId, requestId, String.valueOf(amount), orderInfo);
+            Map<String, Object> moMoResponse = moMoService.createMoMoPayment(orderId, requestId, String.valueOf(amount),
+                    orderInfo);
 
             if (moMoResponse != null && "Thành công.".equals(moMoResponse.get("message"))) {
                 // Payment initiation was successful, status will be updated via IPN
@@ -133,7 +135,7 @@ public class PaymentService implements IPaymentService {
         ResponseObject response = new ResponseObject();
         try {
             // Fetch the student based on studentId
-            Optional<Student> studentOpt = studentRepository.findById(studentId);
+            Optional<Student> studentOpt = studentRepository.findById(studentId.longValue());
             if (studentOpt.isEmpty()) {
                 response.setStatus(HttpStatus.BAD_REQUEST);
                 response.setMessage("Student not found.");
