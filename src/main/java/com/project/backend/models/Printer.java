@@ -48,7 +48,7 @@ public class Printer {
     // Many-to-One relationship with Spso
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "spso_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "printer_spso_id_fk"))
-    private Spso spso;
+    private SPSO spso;
 
     public enum PrinterStatus {
         active,
@@ -56,6 +56,7 @@ public class Printer {
         occupied,
         deleted
     }
+
     @PrePersist
     public void prePersist() {
         if (this.lastMaintenanceDate == null) {
