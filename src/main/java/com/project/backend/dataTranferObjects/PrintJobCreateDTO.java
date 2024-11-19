@@ -11,7 +11,7 @@ import lombok.*;
 @Setter
 public class PrintJobCreateDTO {
     @JsonProperty("file_id")
-    private Long fileId;
+    private Integer fileId;
 
     @JsonProperty("printer_id")
     private Long printerId;

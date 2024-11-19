@@ -11,7 +11,7 @@ import com.project.backend.repositories.StudentRepository;
 import com.project.backend.services.firebase.FirebaseStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -19,72 +19,78 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Service
 public class FileService implements IFileService {
-    @Autowired
-    private FileFormatRepository fileFormatRepository;
-    @Autowired
-    private FileRepository fileRepository;
-    @Autowired
-    private FirebaseStorageService firebaseStorageService;
-    @Autowired
-    private StudentRepository studentRepository;
-    @Override
-    public File uploadFile(MultipartFile file) throws Exception{
+        @Autowired
+        private FileFormatRepository fileFormatRepository;
+        @Autowired
+        private FileRepository fileRepository;
+        @Autowired
+        private FirebaseStorageService firebaseStorageService;
+        @Autowired
+        private StudentRepository studentRepository;
 
-            // Get student who upload file
-            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            String userName = ((UserDetails) principal).getUsername();
-            Student student = studentRepository.findByEmail(userName).orElseThrow(() -> new DataNotFoundException("User not found"));
+        @Override
+        public File uploadFile(MultipartFile file) throws Exception {
 
-            String fileName = file.getOriginalFilename();
-            String fileSize = Long.valueOf(file.getSize()).toString();
-            String fileFormatName;
+                // Get student who upload file
+                Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                String userName = ((UserDetails) principal).getUsername();
+                Student student = studentRepository.findByEmail(userName)
+                                .orElseThrow(() -> new DataNotFoundException("User not found"));
 
-            // Get format name from original file name
-            if(fileName != null && fileName.contains(".")){
-                fileFormatName = fileName.substring(fileName.lastIndexOf('.') + 1);
-            } else throw new InvalidParamException("Invalid file name");
+                String fileName = file.getOriginalFilename();
+                String fileSize = Long.valueOf(file.getSize()).toString();
+                String fileFormatName;
 
-            String fileUrl = firebaseStorageService.uploadFile(file);
+                // Get format name from original file name
+                if (fileName != null && fileName.contains(".")) {
+                        fileFormatName = fileName.substring(fileName.lastIndexOf('.') + 1);
+                } else
+                        throw new InvalidParamException("Invalid file name");
 
-            FileFormat fileFormat = fileFormatRepository.findByName(fileFormatName).orElseThrow(() -> new DataNotFoundException("File format not found"));
-            LocalDateTime now = LocalDateTime.now();
+                String fileUrl = firebaseStorageService.uploadFile(file);
 
-            File uploadFile = File.builder()
-                    .student(student)
-                    .name(fileName)
-                    .size(fileSize)
-                    .fileFormat(fileFormat)
-                    .url(fileUrl)
-                    .uploadDate(now)
-                    .build();
+                FileFormat fileFormat = fileFormatRepository.findByName(fileFormatName)
+                                .orElseThrow(() -> new DataNotFoundException("File format not found"));
+                LocalDateTime now = LocalDateTime.now();
 
-            return fileRepository.save(uploadFile);
-    }
+                File uploadFile = File.builder()
+                                .student(student)
+                                .name(fileName)
+                                .size(fileSize)
+                                .fileFormat(fileFormat)
+                                .url(fileUrl)
+                                .uploadDate(now)
+                                .build();
 
-    @Override
-    public Page<File> getAllFilesByUserId(Integer userId, Pageable pageable) {
-            return fileRepository.findAllFilesByStudentId(userId, pageable);
-    }
+                return fileRepository.save(uploadFile);
+        }
 
-    @Override
-    public void deleteFile(Integer fileId) throws Exception{
-            File file = fileRepository.findById(fileId).orElseThrow(() -> new DataNotFoundException("File not found"));
-            String fileUrl = file.getUrl();
-            // Find filepath in true format
-            int index = fileUrl.indexOf("o/");
-            int endIndex = fileUrl.indexOf('?');
-            String filePath = fileUrl.substring(index + 2, endIndex);
-            System.out.println(filePath);
-            boolean checkDeleted = firebaseStorageService.deleteFile(filePath);
-            if(!checkDeleted) throw new Exception("Can not delete file");
-            else fileRepository.delete(file);
-    }
+        @Override
+        public Page<File> getAllFilesByUserId(Integer userId, Pageable pageable) {
+                return fileRepository.findAllFilesByStudentId(userId, pageable);
+        }
 
-    @Override
-    public File getFileById(Integer fileId) throws Exception{
-            return fileRepository.findById(fileId).orElseThrow(() -> new DataNotFoundException("File not found"));
-    }
+        @Override
+        public void deleteFile(Integer fileId) throws Exception {
+                File file = fileRepository.findById(fileId)
+                                .orElseThrow(() -> new DataNotFoundException("File not found"));
+                String fileUrl = file.getUrl();
+                // Find filepath in true format
+                int index = fileUrl.indexOf("o/");
+                int endIndex = fileUrl.indexOf('?');
+                String filePath = fileUrl.substring(index + 2, endIndex);
+                System.out.println(filePath);
+                boolean checkDeleted = firebaseStorageService.deleteFile(filePath);
+                if (!checkDeleted)
+                        throw new Exception("Can not delete file");
+                else
+                        fileRepository.delete(file);
+        }
+
+        @Override
+        public File getFileById(Integer fileId) throws Exception {
+                return fileRepository.findById(fileId).orElseThrow(() -> new DataNotFoundException("File not found"));
+        }
 }

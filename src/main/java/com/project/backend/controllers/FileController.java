@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,75 +20,79 @@ import java.util.List;
 @RequestMapping("${api.prefix}/files")
 @RequiredArgsConstructor
 public class FileController {
-    private final FileService fileService;
-    @PostMapping
-    public ResponseEntity<ResponseObject> uploadFile(@RequestParam MultipartFile file) throws Exception{
-        File newFile = fileService.uploadFile(file);
-        FileResponse fileResponse = FileResponse.builder()
-                .id(newFile.getId())
-                .size(newFile.getSize())
-                .name(newFile.getName())
-                .url(newFile.getUrl())
-                .uploadDate(newFile.getUploadDate())
-                .fileFormat(newFile.getFileFormat().getName())
-                .build();
-        return ResponseEntity.ok().body(ResponseObject.builder()
-                .message("Upload file successfully")
-                .status(HttpStatus.CREATED)
-                .data(fileResponse)
-                .build());
-    }
+        private final FileService fileService;
 
-    @GetMapping("/get-all/{user-id}")
-    public ResponseEntity<ResponseObject> getAllFiles(@PathVariable(value = "user-id") String userId,
-                                                      @RequestParam(defaultValue = "1") int page,
-                                                      @RequestParam(defaultValue = "10") int limit){
-        if (page < 1)
-            page = 1;
+        @PostMapping
+        @PreAuthorize("hasRole'STUDENT'")
+        public ResponseEntity<ResponseObject> uploadFile(@RequestParam MultipartFile file) throws Exception {
+                File newFile = fileService.uploadFile(file);
+                FileResponse fileResponse = FileResponse.builder()
+                                .id(newFile.getId())
+                                .size(newFile.getSize())
+                                .name(newFile.getName())
+                                .url(newFile.getUrl())
+                                .uploadDate(newFile.getUploadDate())
+                                .fileFormat(newFile.getFileFormat().getName())
+                                .build();
+                return ResponseEntity.ok().body(ResponseObject.builder()
+                                .message("Upload file successfully")
+                                .status(HttpStatus.CREATED)
+                                .data(fileResponse)
+                                .build());
+        }
 
-        PageRequest pageRequest = PageRequest.of(
-                page - 1, limit,
-                Sort.by("id").ascending());
+        @GetMapping("/get-all/{user-id}")
+        @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'SPSO')")
+        public ResponseEntity<ResponseObject> getAllFiles(@PathVariable(value = "user-id") String userId,
+                        @RequestParam(defaultValue = "1") int page,
+                        @RequestParam(defaultValue = "10") int limit) {
+                if (page < 1)
+                        page = 1;
 
-        Page<File> filePage = fileService.getAllFilesByUserId(Integer.parseInt(userId), pageRequest);
+                PageRequest pageRequest = PageRequest.of(
+                                page - 1, limit,
+                                Sort.by("id").ascending());
 
-        List<FileResponse> fileResponseList = filePage.getContent().stream()
-                .map(FileResponse::fromFile)
-                .toList();
+                Page<File> filePage = fileService.getAllFilesByUserId(Integer.parseInt(userId), pageRequest);
 
-        return ResponseEntity.ok().body(ResponseObject.builder()
-                .message("Get all of files successfully")
-                .status(HttpStatus.OK)
-                .data(fileResponseList)
-                .build());
-    }
+                List<FileResponse> fileResponseList = filePage.getContent().stream()
+                                .map(FileResponse::fromFile)
+                                .toList();
 
-    @DeleteMapping("/{file-id}")
-    public ResponseEntity<ResponseObject> deleteFile(@PathVariable(value = "file-id") String fileId) throws Exception{
-        fileService.deleteFile(Integer.parseInt(fileId));
-        return ResponseEntity.ok().body(ResponseObject.builder()
-                .message("Delete file successfully")
-                .status(HttpStatus.OK)
-                .data(null)
-                .build());
-    }
+                return ResponseEntity.ok().body(ResponseObject.builder()
+                                .message("Get all of files successfully")
+                                .status(HttpStatus.OK)
+                                .data(fileResponseList)
+                                .build());
+        }
 
-    @GetMapping("/{file-id}")
-    public ResponseEntity<ResponseObject> getFile(@PathVariable(value = "file-id") String fileId) throws Exception{
-        File file = fileService.getFileById(Integer.parseInt(fileId));
-        FileResponse fileResponse = FileResponse.builder()
-                .id(file.getId())
-                .size(file.getSize())
-                .name(file.getName())
-                .url(file.getUrl())
-                .uploadDate(file.getUploadDate())
-                .fileFormat(file.getFileFormat().getName())
-                .build();
+        @DeleteMapping("/{file-id}")
+        public ResponseEntity<ResponseObject> deleteFile(@PathVariable(value = "file-id") String fileId)
+                        throws Exception {
+                fileService.deleteFile(Integer.parseInt(fileId));
+                return ResponseEntity.ok().body(ResponseObject.builder()
+                                .message("Delete file successfully")
+                                .status(HttpStatus.OK)
+                                .data(null)
+                                .build());
+        }
 
-        return ResponseEntity.ok().body(ResponseObject.builder()
-                .message("Get file successfully")
-                .status(HttpStatus.OK)
-                .data(fileResponse)
-                .build());
-    }
+        @GetMapping("/{file-id}")
+        public ResponseEntity<ResponseObject> getFile(@PathVariable(value = "file-id") String fileId) throws Exception {
+                File file = fileService.getFileById(Integer.parseInt(fileId));
+                FileResponse fileResponse = FileResponse.builder()
+                                .id(file.getId())
+                                .size(file.getSize())
+                                .name(file.getName())
+                                .url(file.getUrl())
+                                .uploadDate(file.getUploadDate())
+                                .fileFormat(file.getFileFormat().getName())
+                                .build();
+
+                return ResponseEntity.ok().body(ResponseObject.builder()
+                                .message("Get file successfully")
+                                .status(HttpStatus.OK)
+                                .data(fileResponse)
+                                .build());
+        }
 }
