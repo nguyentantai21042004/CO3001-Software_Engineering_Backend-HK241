@@ -2,13 +2,17 @@ package com.project.backend.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.*;
 
 import java.util.List;
 
-@Data
 @Entity
 @Table(name = "file_formats")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class FileFormat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
