@@ -23,9 +23,9 @@ public class FileController {
         private final FileService fileService;
 
         @PostMapping
-        @PreAuthorize("hasRole'STUDENT'")
-        public ResponseEntity<ResponseObject> uploadFile(@RequestParam MultipartFile file) throws Exception {
-                File newFile = fileService.uploadFile(file);
+        @PreAuthorize("hasRole('STUDENT')")
+        public ResponseEntity<ResponseObject> uploadFile(@RequestParam String token, @RequestParam MultipartFile file) throws Exception {
+                File newFile = fileService.uploadFile(token, file);
                 FileResponse fileResponse = FileResponse.builder()
                                 .id(newFile.getId())
                                 .size(newFile.getSize())
@@ -41,11 +41,12 @@ public class FileController {
                                 .build());
         }
 
-        @GetMapping("/get-all/{user-id}")
-        @PreAuthorize("hasAnyRole('ADMIN', 'STUDENT', 'SPSO')")
-        public ResponseEntity<ResponseObject> getAllFiles(@PathVariable(value = "user-id") String userId,
+        @GetMapping("/get-all")
+        @PreAuthorize("hasRole('STUDENT')")
+        public ResponseEntity<ResponseObject> getAllFiles(
+                        @RequestParam String token,
                         @RequestParam(defaultValue = "1") int page,
-                        @RequestParam(defaultValue = "10") int limit) {
+                        @RequestParam(defaultValue = "10") int limit) throws Exception{
                 if (page < 1)
                         page = 1;
 
@@ -53,7 +54,7 @@ public class FileController {
                                 page - 1, limit,
                                 Sort.by("id").ascending());
 
-                Page<File> filePage = fileService.getAllFilesByUserId(Integer.parseInt(userId), pageRequest);
+                Page<File> filePage = fileService.getAllFiles(token, pageRequest);
 
                 List<FileResponse> fileResponseList = filePage.getContent().stream()
                                 .map(FileResponse::fromFile)
@@ -67,6 +68,7 @@ public class FileController {
         }
 
         @DeleteMapping("/{file-id}")
+        @PreAuthorize("hasRole('STUDENT')")
         public ResponseEntity<ResponseObject> deleteFile(@PathVariable(value = "file-id") String fileId)
                         throws Exception {
                 fileService.deleteFile(Integer.parseInt(fileId));
@@ -78,6 +80,7 @@ public class FileController {
         }
 
         @GetMapping("/{file-id}")
+        @PreAuthorize("hasRole('STUDENT')")
         public ResponseEntity<ResponseObject> getFile(@PathVariable(value = "file-id") String fileId) throws Exception {
                 File file = fileService.getFileById(Integer.parseInt(fileId));
                 FileResponse fileResponse = FileResponse.builder()

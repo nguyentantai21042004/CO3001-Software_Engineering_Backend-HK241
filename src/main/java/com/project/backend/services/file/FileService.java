@@ -9,6 +9,8 @@ import com.project.backend.repositories.FileFormatRepository;
 import com.project.backend.repositories.FileRepository;
 import com.project.backend.repositories.StudentRepository;
 import com.project.backend.services.firebase.FirebaseStorageService;
+import com.project.backend.services.student.IStudentService;
+import com.project.backend.services.student.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,14 +32,14 @@ public class FileService implements IFileService {
         @Autowired
         private StudentRepository studentRepository;
 
+        @Autowired
+        private StudentService studentService;
+
         @Override
-        public File uploadFile(MultipartFile file) throws Exception {
+        public File uploadFile(String token, MultipartFile file) throws Exception {
 
                 // Get student who upload file
-                Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-                String userName = ((UserDetails) principal).getUsername();
-                Student student = studentRepository.findByEmail(userName)
-                                .orElseThrow(() -> new DataNotFoundException("User not found"));
+                Student student = studentService.getStudentDetailsByExtractingToken(token);
 
                 String fileName = file.getOriginalFilename();
                 String fileSize = Long.valueOf(file.getSize()).toString();
@@ -68,8 +70,9 @@ public class FileService implements IFileService {
         }
 
         @Override
-        public Page<File> getAllFilesByUserId(Integer userId, Pageable pageable) {
-                return fileRepository.findAllFilesByStudentId(userId, pageable);
+        public Page<File> getAllFiles(String token, Pageable pageable) throws Exception{
+                Student student = studentService.getStudentDetailsByExtractingToken(token);
+                return fileRepository.findAllFilesByStudentId(student.getStudentId(), pageable);
         }
 
         @Override
