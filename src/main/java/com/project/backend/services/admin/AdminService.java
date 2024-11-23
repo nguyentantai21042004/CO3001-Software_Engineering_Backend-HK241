@@ -132,4 +132,10 @@ public class AdminService implements IAdminService {
         }
         return user.orElseThrow(() -> new Exception("User not found"));
     }
+
+    @Override
+    public SPSO findSpsoById(Long id) {
+        return spsoRepository.findById(id).orElse(null);
+    }
+
 }

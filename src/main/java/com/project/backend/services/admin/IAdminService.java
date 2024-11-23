@@ -20,4 +20,7 @@ public interface IAdminService {
     SPSO createSPSO(SPSOCreateDTO spsoCreateDTO) throws Exception;
 
     SPSO updateUser(Long userId, UpdateUserDTO updatedUserDTO) throws Exception;
+
+    SPSO findSpsoById(Long id);
+
 }
