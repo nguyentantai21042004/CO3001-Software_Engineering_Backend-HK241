@@ -6,8 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface IFileService {
-    public File uploadFile(MultipartFile file) throws Exception;
-    public Page<File> getAllFilesByUserId(Integer userId, Pageable pageable);
+    public File uploadFile(String token, MultipartFile file) throws Exception;
+    public Page<File> getAllFiles (String token, Pageable pageable) throws Exception;
     public void deleteFile(Integer fileId) throws Exception;
     public File getFileById(Integer fileId) throws Exception;
 }
