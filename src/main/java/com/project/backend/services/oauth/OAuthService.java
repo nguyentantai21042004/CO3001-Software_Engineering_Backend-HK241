@@ -1,10 +1,6 @@
 package com.project.backend.services.oauth;
 
 import com.project.backend.exceptions.DataNotFoundException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SigningKeyResolverAdapter;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +8,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
-import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -21,22 +16,15 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyFactory;
-import java.security.PublicKey;
-import java.security.spec.RSAPublicKeySpec;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class OAuthService implements IOAuthService{
+public class OAuthService implements IOAuthService {
     @Value("${spring.security.oauth2.client.registration.google.client-secret}")
     private String clientSecret;
 
@@ -52,7 +40,7 @@ public class OAuthService implements IOAuthService{
     private final RestTemplate restTemplate = new RestTemplate();
 
     @Override
-    public String buildAuthorizationUri() throws Exception{
+    public String buildAuthorizationUri() throws Exception {
         String authorizationUri = "https://accounts.google.com/o/oauth2/auth" +
                 "?client_id=" + URLEncoder.encode(clientId, StandardCharsets.UTF_8) +
                 "&redirect_uri=" + URLEncoder.encode(redirectUri, StandardCharsets.UTF_8) +
@@ -61,6 +49,7 @@ public class OAuthService implements IOAuthService{
         return authorizationUri;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public Map<String, Object> getOAuthGoogleToken(String authorizationCode) throws Exception {
         HttpEntity<MultiValueMap<String, String>> request = getMultiValueMapHttpEntity(authorizationCode);
@@ -80,7 +69,8 @@ public class OAuthService implements IOAuthService{
             throw new DataNotFoundException("No response from OAuth provider, please try again later");
         }
         if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new DataNotFoundException("Failed to communicate with OAuth provider, status: " + response.getStatusCode());
+            throw new DataNotFoundException(
+                    "Failed to communicate with OAuth provider, status: " + response.getStatusCode());
         }
 
         String accessToken = (String) response.getBody().get("access_token");
@@ -99,7 +89,6 @@ public class OAuthService implements IOAuthService{
 
         return tokenData;
     }
-
 
     private HttpEntity<MultiValueMap<String, String>> getMultiValueMapHttpEntity(String authorizationCode) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();

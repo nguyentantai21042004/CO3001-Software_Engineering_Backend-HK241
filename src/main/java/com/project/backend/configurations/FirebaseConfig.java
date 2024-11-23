@@ -12,6 +12,7 @@ import java.io.IOException;
 @Configuration
 public class FirebaseConfig {
 
+    @SuppressWarnings("deprecation")
     @PostConstruct
     public void init() throws IOException {
         FileInputStream serviceAccount = new FileInputStream("src/main/resources/serviceAccountKey.json");

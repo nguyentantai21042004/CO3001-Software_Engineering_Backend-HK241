@@ -1,14 +1,9 @@
 package com.project.backend.components;
 
-import com.project.backend.models.SPSO;
-import com.project.backend.models.Student;
-import com.project.backend.models.Token;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -107,6 +102,7 @@ public class JwtTokenUtils {
         }
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private PublicKey getGooglePublicKey(String kid) throws Exception {
         RestTemplate restTemplate = new RestTemplate();
         String certsUri = "https://www.googleapis.com/oauth2/v3/certs";
@@ -141,6 +137,7 @@ public class JwtTokenUtils {
     public Claims extractAllClaimsFromOAuthToken(String token) throws Exception {
         return Jwts.parserBuilder()
                 .setSigningKeyResolver(new SigningKeyResolverAdapter() {
+                    @SuppressWarnings("rawtypes")
                     @Override
                     public Key resolveSigningKey(JwsHeader header, Claims claims) {
                         try {

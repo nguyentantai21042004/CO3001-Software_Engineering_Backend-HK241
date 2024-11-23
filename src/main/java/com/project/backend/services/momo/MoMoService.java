@@ -44,7 +44,9 @@ public class MoMoService {
     @Value("${momo.request_type}")
     private String requestType;
 
-    public Map<String, Object> createMoMoPayment(String orderId, String requestId, String amount, String orderInfo) throws Exception {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public Map<String, Object> createMoMoPayment(String orderId, String requestId, String amount, String orderInfo)
+            throws Exception {
         String extraData = "";
 
         // Create raw signature

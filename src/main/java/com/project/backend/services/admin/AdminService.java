@@ -9,7 +9,6 @@ import com.project.backend.models.Role;
 import com.project.backend.models.SPSO;
 import com.project.backend.repositories.RoleRepository;
 import com.project.backend.repositories.SPSORepository;
-import com.project.backend.dataTranferObjects.UpdateUserDTO;
 
 import java.util.Optional;
 

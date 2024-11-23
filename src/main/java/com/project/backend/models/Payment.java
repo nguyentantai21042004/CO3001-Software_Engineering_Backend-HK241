@@ -3,7 +3,6 @@ package com.project.backend.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import java.time.LocalDateTime;
 
@@ -38,10 +37,11 @@ public class Payment {
     private String status;
 
     @Column(name = "order_id", nullable = false, unique = true)
-    private String orderId;  // Use UUID for uniqueness across orders
+    private String orderId; // Use UUID for uniqueness across orders
 
     @Column(name = "request_id", nullable = false, unique = true)
     private String requestId; // Use UUID for uniqueness across requests
+
     @PrePersist
     public void prePersist() {
         if (this.transactionDate == null) {

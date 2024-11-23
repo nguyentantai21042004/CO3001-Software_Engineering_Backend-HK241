@@ -35,8 +35,7 @@ public class WebSecurityConfiguration {
                                     String.format("%s/users/custom-oauth-login", apiPrefix),
                                     String.format("%s/users/custom-oauth-callback", apiPrefix),
                                     String.format("%s/internal/admin/login", apiPrefix),
-                                    String.format("%s/favicon.ico", apiPrefix)
-                                    )
+                                    String.format("%s/favicon.ico", apiPrefix))
                             .permitAll()
                             .requestMatchers(HttpMethod.PUT, String.format("%s/internal/admin/detail/**", apiPrefix))
                             .hasAnyRole("ADMIN", "SPSO")

@@ -7,33 +7,22 @@ import com.project.backend.models.FileFormat;
 import com.project.backend.models.Student;
 import com.project.backend.repositories.FileFormatRepository;
 import com.project.backend.repositories.FileRepository;
-import com.project.backend.repositories.StudentRepository;
 import com.project.backend.services.firebase.FirebaseStorageService;
-import com.project.backend.services.student.IStudentService;
 import com.project.backend.services.student.StudentService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class FileService implements IFileService {
-        @Autowired
-        private FileFormatRepository fileFormatRepository;
-        @Autowired
-        private FileRepository fileRepository;
-        @Autowired
-        private FirebaseStorageService firebaseStorageService;
-        @Autowired
-        private StudentRepository studentRepository;
-
-        @Autowired
-        private StudentService studentService;
+        private final FileFormatRepository fileFormatRepository;
+        private final FileRepository fileRepository;
+        private final FirebaseStorageService firebaseStorageService;
+        private final StudentService studentService;
 
         @Override
         public File uploadFile(String token, MultipartFile file) throws Exception {
@@ -70,7 +59,7 @@ public class FileService implements IFileService {
         }
 
         @Override
-        public Page<File> getAllFiles(String token, Pageable pageable) throws Exception{
+        public Page<File> getAllFiles(String token, Pageable pageable) throws Exception {
                 Student student = studentService.getStudentDetailsByExtractingToken(token);
                 return fileRepository.findAllFilesByStudentId(student.getStudentId(), pageable);
         }

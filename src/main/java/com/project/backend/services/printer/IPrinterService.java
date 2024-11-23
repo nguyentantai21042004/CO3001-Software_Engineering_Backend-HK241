@@ -18,6 +18,4 @@ public interface IPrinterService {
     ResponseObject findByLocationId(Integer locationId);
 
     ResponseObject findBySpsoId(Integer spsoId);
-
-
 }
