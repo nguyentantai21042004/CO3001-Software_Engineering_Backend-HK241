@@ -1,5 +1,6 @@
 server:
-  port: 8088
+  port: ${PORT:8080} # Sử dụng cổng Render cung cấp, mặc định là 8080
+
 
 api:
   prefix: /api/v1
