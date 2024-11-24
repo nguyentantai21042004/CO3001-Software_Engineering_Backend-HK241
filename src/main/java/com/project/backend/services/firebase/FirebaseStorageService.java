@@ -11,23 +11,36 @@ import java.util.UUID;
 @Service
 public class FirebaseStorageService {
 
-    private final Storage storage;
+    private final StorageClient storageClient;
 
     public FirebaseStorageService() {
-        this.storage = StorageClient.getInstance().bucket().getStorage();
+        this.storageClient = StorageClient.getInstance();
     }
 
     public String uploadFile(MultipartFile file) throws IOException {
-        String fileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
-        Bucket bucket = StorageClient.getInstance().bucket();
-        Blob blob = bucket.create(fileName, file.getBytes(), file.getContentType());
-        blob.createAcl(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
-        return blob.getMediaLink();
+        try {
+            String fileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+            Bucket bucket = storageClient.bucket();
+            Blob blob = bucket.create(fileName, file.getBytes(), file.getContentType());
+            blob.createAcl(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER));
+            return blob.getMediaLink();
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     public boolean deleteFile(String filePath) {
-        String bucketName = "testbe-28a98.appspot.com";
-        Bucket bucket = storage.get(bucketName);
-        return bucket.get(filePath).delete();
+        try {
+            String bucketName = "testbe-28a98.appspot.com";
+            Bucket bucket = storageClient.bucket(bucketName);
+            Blob blob = bucket.get(filePath);
+            if (blob == null) {
+                return false;
+            }
+            return blob.delete();
+        } catch (Exception e) {
+            return false;
+        }
     }
+
 }
