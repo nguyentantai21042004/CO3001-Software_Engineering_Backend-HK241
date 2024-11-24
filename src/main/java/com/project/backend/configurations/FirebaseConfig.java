@@ -24,9 +24,9 @@ public class FirebaseConfig {
                     .setStorageBucket("testbe-28a98.appspot.com")
                     .build();
 
-            // Khởi tạo FirebaseApp
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
+                System.out.println("FirebaseApp đã được khởi tạo thành công.");
             }
         } catch (Exception e) {
             throw new RuntimeException("Không thể khởi tạo FirebaseApp", e);

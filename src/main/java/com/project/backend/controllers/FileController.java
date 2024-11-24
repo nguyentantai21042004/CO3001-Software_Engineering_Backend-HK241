@@ -24,7 +24,8 @@ public class FileController {
 
         @PostMapping
         @PreAuthorize("hasRole('STUDENT')")
-        public ResponseEntity<ResponseObject> uploadFile(@RequestParam String token, @RequestParam MultipartFile file) throws Exception {
+        public ResponseEntity<ResponseObject> uploadFile(@RequestParam String token, @RequestParam MultipartFile file)
+                        throws Exception {
                 File newFile = fileService.uploadFile(token, file);
                 FileResponse fileResponse = FileResponse.builder()
                                 .id(newFile.getId())
@@ -46,7 +47,7 @@ public class FileController {
         public ResponseEntity<ResponseObject> getAllFiles(
                         @RequestParam String token,
                         @RequestParam(defaultValue = "1") int page,
-                        @RequestParam(defaultValue = "10") int limit) throws Exception{
+                        @RequestParam(defaultValue = "10") int limit) throws Exception {
                 if (page < 1)
                         page = 1;
 
