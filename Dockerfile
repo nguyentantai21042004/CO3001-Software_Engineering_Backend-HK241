@@ -1,4 +1,3 @@
-# Sử dụng một image có chứa JDK và Maven để build và chạy ứng dụng
 FROM maven:3.8.8-eclipse-temurin-17 AS build
 
 # Tạo thư mục chứa ứng dụng trong container
@@ -10,7 +9,6 @@ COPY . .
 # Build dự án Maven, tạo file jar
 RUN mvn clean package -DskipTests
 
-# Sử dụng một image nhỏ hơn để chạy ứng dụng (sau khi đã build)
 FROM openjdk:17-jdk-alpine
 
 # Thiết lập biến môi trường để container nhận diện đúng timezone (tùy chọn)
