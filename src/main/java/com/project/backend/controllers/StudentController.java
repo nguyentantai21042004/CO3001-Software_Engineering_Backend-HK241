@@ -1,7 +1,6 @@
 package com.project.backend.controllers;
 
 import com.project.backend.dataTranferObjects.StudentLoginDTO;
-import com.project.backend.responses.LoginResponse;
 import com.project.backend.responses.ResponseObject;
 import com.project.backend.services.oauth.IOAuthService;
 import com.project.backend.services.student.IStudentService;
@@ -37,23 +36,30 @@ public class StudentController {
         }
 
         @GetMapping("/custom-oauth-callback")
-        public ResponseEntity<ResponseObject> OAuthCallBack(
-                        @RequestParam("code") String authorizationCode) throws Exception {
+        public void OAuthCallBack(
+                        @RequestParam("code") String authorizationCode,
+                        HttpServletResponse response) throws Exception {
                 Map<String, Object> tokenDataOAuth = oAuthService.getOAuthGoogleToken(authorizationCode);
                 StudentLoginDTO studentLoginDTO = studentService.getStudentLoginDTO(tokenDataOAuth);
 
                 String jwtToken = studentService.login(studentLoginDTO);
 
-                LoginResponse loginResponse = LoginResponse.builder()
-                                .message("user.login.login_successfully")
-                                .token(jwtToken)
-                                .tokenType("Bearer")
-                                .build();
+                System.out.println(jwtToken);
 
-                return ResponseEntity.ok().body(ResponseObject.builder()
-                                .message(loginResponse.getMessage())
-                                .data(loginResponse)
-                                .status(HttpStatus.OK)
-                                .build());
+                // LoginResponse loginResponse = LoginResponse.builder()
+                // .message("user.login.login_successfully")
+                // .token(jwtToken)
+                // .tokenType("Bearer")
+                // .build();
+
+                // return ResponseEntity.ok().body(ResponseObject.builder()
+                // .message(loginResponse.getMessage())
+                // .data(loginResponse)
+                // .status(HttpStatus.OK)
+                // .build());
+
+                // 3. Redirect người dùng về frontend, kèm token
+                String frontendRedirectUrl = "http://localhost:3000/api/auth/callback/google?token=" + jwtToken;
+                response.sendRedirect(frontendRedirectUrl);
         }
 }
