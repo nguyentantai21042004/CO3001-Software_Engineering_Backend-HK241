@@ -52,3 +52,6 @@ ADD COLUMN password VARCHAR(255);
 
 ALTER TABLE tokens
 ADD COLUMN role varchar(50);
+
+ALTER TABLE students
+ADD COLUMN image_url VARCHAR(255) DEFAULT 'https://th.bing.com/th/id/OIP.V0npe_Q1op_2gN92DIXnwAHaH3?rs=1&pid=ImgDetMain';

@@ -30,7 +30,7 @@ public class PaymentController {
                 : authorizationHeader;
 
         // Fetch the student details using the token
-        Student student = studentService.getStudentDetailsByExtractingToken(token);
+        Student student = studentService.getDetailFromToken(token);
 
         // Use the student's ID to create the payment
         ResponseObject response = paymentService.createPayment(student.getStudentId(), a4Count, a3Count, "MoMo",
@@ -72,7 +72,7 @@ public class PaymentController {
                 : authorizationHeader;
 
         // Fetch the student details using the token
-        Student student = studentService.getStudentDetailsByExtractingToken(token);
+        Student student = studentService.getDetailFromToken(token);
 
         // Use the student's ID to fetch payments
         ResponseObject response = paymentService.findPaymentByStudentId(student.getStudentId());

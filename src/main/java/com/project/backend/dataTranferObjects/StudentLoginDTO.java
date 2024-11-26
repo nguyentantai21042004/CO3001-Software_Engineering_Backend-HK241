@@ -24,7 +24,4 @@ public class StudentLoginDTO {
 
     @JsonProperty("picture")
     private String picture;
-
-    @JsonProperty("locale")
-    private String locale;
 }

@@ -13,7 +13,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
+import com.project.backend.components.JwtTokenFilter;
 
 @Configuration
 @EnableWebSecurity(debug = true)
@@ -23,6 +26,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 public class WebSecurityConfiguration {
     @Value("${api.prefix}")
     private String apiPrefix;
+
+    private final JwtTokenFilter jwtTokenFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -48,7 +53,8 @@ public class WebSecurityConfiguration {
                             .hasAnyRole("ADMIN", "SPSO")
                             .anyRequest()
                             .authenticated();
-                });
+                })
+                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 }

@@ -28,7 +28,7 @@ public class FileService implements IFileService {
         public File uploadFile(String token, MultipartFile file) throws Exception {
 
                 // Get student who upload file
-                Student student = studentService.getStudentDetailsByExtractingToken(token);
+                Student student = studentService.getDetailFromToken(token);
 
                 String fileName = file.getOriginalFilename();
                 String fileSize = Long.valueOf(file.getSize()).toString();
@@ -60,7 +60,7 @@ public class FileService implements IFileService {
 
         @Override
         public Page<File> getAllFiles(String token, Pageable pageable) throws Exception {
-                Student student = studentService.getStudentDetailsByExtractingToken(token);
+                Student student = studentService.getDetailFromToken(token);
                 return fileRepository.findAllFilesByStudentId(student.getStudentId(), pageable);
         }
 

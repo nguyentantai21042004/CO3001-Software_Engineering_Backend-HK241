@@ -50,6 +50,9 @@ public class Student implements UserDetails {
     @Column(name = "password", nullable = true, length = 255)
     private String password;
 
+    @Column(name = "image_url", nullable = false, length = 255)
+    private String imageUrl;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorityList = new ArrayList<>();

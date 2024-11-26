@@ -9,6 +9,8 @@ public interface IPrinterService {
 
     ResponseObject findPrinterById(Integer id);
 
+    Printer Detail(Integer id) throws Exception;
+
     ResponseObject addPrinter(Printer printer);
 
     ResponseObject updatePrinter(Integer id, Printer updatedPrinter);

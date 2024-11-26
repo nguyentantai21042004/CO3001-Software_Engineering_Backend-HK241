@@ -1,4 +1,4 @@
-package com.project.backend.responses;
+package com.project.backend.responses.file;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.backend.models.File;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FileResponse {
+public class FileDetailResponse {
     @JsonProperty("id")
     private Integer id;
     @JsonProperty("size")
@@ -25,8 +25,8 @@ public class FileResponse {
     @JsonProperty("file_format")
     private String fileFormat;
 
-    public static FileResponse fromFile(File file) {
-        return FileResponse.builder()
+    public static FileDetailResponse fromFile(File file) {
+        return FileDetailResponse.builder()
                 .id(file.getId())
                 .size(file.getSize())
                 .name(file.getName())
