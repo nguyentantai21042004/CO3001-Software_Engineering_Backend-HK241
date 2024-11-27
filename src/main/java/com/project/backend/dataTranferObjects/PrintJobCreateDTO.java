@@ -18,7 +18,7 @@ public class PrintJobCreateDTO {
 
     @JsonProperty("page_number")
     private String pageNumber;
-
+    
     @JsonProperty("page_size")
     private String pageSize;
 
@@ -27,6 +27,9 @@ public class PrintJobCreateDTO {
 
     @JsonProperty("color_mode")
     private Boolean colorMode;
+
+    @JsonProperty("page_side")
+    private String pageSide;
 
     @JsonProperty("is_duplex")
     private Boolean isDuplex;

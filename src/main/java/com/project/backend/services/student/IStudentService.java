@@ -5,8 +5,15 @@ import com.project.backend.models.Student;
 
 import java.util.Map;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+
 public interface IStudentService {
-    StudentLoginDTO getStudentLoginDTO(Map<String, Object> tokenDataOAuth) throws Exception;
-    String login(StudentLoginDTO studentLoginDTO) throws Exception;
-    Student getStudentDetailsByExtractingToken(String token) throws Exception;
+    StudentLoginDTO createDTO(Map<String, Object> tokenDataOAuth) throws Exception;
+
+    String getJWTToken(StudentLoginDTO studentLoginDTO) throws Exception;
+
+    Student getDetailFromToken(String token) throws Exception;
+
+    Page<Student> findAll(PageRequest pageRequest, String keyword) throws Exception;
 }

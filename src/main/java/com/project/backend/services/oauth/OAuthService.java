@@ -92,6 +92,7 @@ public class OAuthService implements IOAuthService {
 
     private HttpEntity<MultiValueMap<String, String>> getMultiValueMapHttpEntity(String authorizationCode) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+
         params.add(OAuth2ParameterNames.CLIENT_ID, clientId);
         params.add(OAuth2ParameterNames.CLIENT_SECRET, clientSecret);
         params.add(OAuth2ParameterNames.CODE, authorizationCode);

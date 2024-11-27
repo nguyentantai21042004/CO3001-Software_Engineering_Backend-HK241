@@ -1,8 +1,8 @@
 package com.project.backend.controllers;
 
 import com.project.backend.models.File;
-import com.project.backend.responses.FileResponse;
 import com.project.backend.responses.ResponseObject;
+import com.project.backend.responses.file.FileDetailResponse;
 import com.project.backend.services.file.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,7 +27,7 @@ public class FileController {
         public ResponseEntity<ResponseObject> uploadFile(@RequestParam String token, @RequestParam MultipartFile file)
                         throws Exception {
                 File newFile = fileService.uploadFile(token, file);
-                FileResponse fileResponse = FileResponse.builder()
+                FileDetailResponse fileResponse = FileDetailResponse.builder()
                                 .id(newFile.getId())
                                 .size(newFile.getSize())
                                 .name(newFile.getName())
@@ -57,8 +57,8 @@ public class FileController {
 
                 Page<File> filePage = fileService.getAllFiles(token, pageRequest);
 
-                List<FileResponse> fileResponseList = filePage.getContent().stream()
-                                .map(FileResponse::fromFile)
+                List<FileDetailResponse> fileResponseList = filePage.getContent().stream()
+                                .map(FileDetailResponse::fromFile)
                                 .toList();
 
                 return ResponseEntity.ok().body(ResponseObject.builder()
@@ -84,7 +84,7 @@ public class FileController {
         @PreAuthorize("hasRole('STUDENT')")
         public ResponseEntity<ResponseObject> getFile(@PathVariable(value = "file-id") String fileId) throws Exception {
                 File file = fileService.getFileById(Integer.parseInt(fileId));
-                FileResponse fileResponse = FileResponse.builder()
+                FileDetailResponse fileResponse = FileDetailResponse.builder()
                                 .id(file.getId())
                                 .size(file.getSize())
                                 .name(file.getName())

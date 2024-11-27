@@ -4,18 +4,19 @@ import com.project.backend.exceptions.DataNotFoundException;
 import com.project.backend.models.Printer;
 import com.project.backend.repositories.PrinterRepository;
 import com.project.backend.responses.ResponseObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class PrinterService implements IPrinterService {
 
-    @Autowired
-    private PrinterRepository printerRepository;
+    private final PrinterRepository printerRepository;
 
     @Override
     public ResponseObject findAllPrinters() {
@@ -30,6 +31,15 @@ public class PrinterService implements IPrinterService {
             response.setMessage(e.getMessage());
         }
         return response;
+    }
+
+    @Override
+    public Printer Detail(Integer id) throws Exception {
+        Optional<Printer> printer = printerRepository.findById(id);
+        if (printer.isEmpty()) {
+            throw new DataNotFoundException("Printer not found");
+        }
+        return printer.get();
     }
 
     @Override
