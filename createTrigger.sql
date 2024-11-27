@@ -255,8 +255,9 @@ CREATE TRIGGER update_printer_status_inactive
 BEFORE UPDATE ON printers
 FOR EACH ROW
 BEGIN
-    -- Check if the remaining pages are set to 0
-    IF NEW.remaining_pages = 0 THEN
+    -- Check if one column is already 0 and the other is being updated to 0
+    IF (NEW.a4_remaining_pages = 0 AND OLD.a3_remaining_pages = 0) OR
+       (NEW.a3_remaining_pages = 0 AND OLD.a4_remaining_pages = 0) THEN
         -- Update the status of the printer to 'inactive'
         SET NEW.status = 'inactive';
     END IF;
