@@ -80,17 +80,20 @@ CREATE Table page_allocations(
 --
 
 CREATE TABLE reports(
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	spso_id INT,
-	total_cost INT NOT NULL CHECK (total_cost >= 0),
-	total_page_printed INT NOT NULL CHECK (total_page_printed >= 0),
-	total_print_job INT NOT NULL CHECK (total_print_job >= 0),
-	start_date DATE,
-	end_date DATE,
-	status VARCHAR(15) NOT NULL,
-	CONSTRAINT report_spso_id_fk FOREIGN KEY (spso_id) REFERENCES spso (id)
-		ON DELETE SET NULL
-		ON UPDATE CASCADE
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    spso_id INT,
+    paper_purchase_count INT NOT NULL CHECK (paper_purchase_count >= 0), -- Số lượt mua giấy
+    paper_sold_count INT NOT NULL CHECK (paper_sold_count >= 0),         -- Số giấy đã bán
+    revenue_from_paper_sales INT NOT NULL CHECK (revenue_from_paper_sales >= 0), -- Tiền kiếm được từ việc bán giấy
+    printed_a4_pages INT NOT NULL CHECK (printed_a4_pages >= 0),         -- Số tờ A4 đã in
+    printed_a3_pages INT NOT NULL CHECK (printed_a3_pages >= 0),         -- Số tờ A3 đã in
+    print_job_count INT NOT NULL CHECK (print_job_count >= 0),           -- Số lần in
+    start_date DATE,                                                    -- Thời gian bắt đầu
+    end_date DATE,                                                      -- Thời gian kết thúc
+    type VARCHAR(10) NOT NULL CHECK(type IN ('monthly', 'yearly')) DEFAULT 'monthly',
+    CONSTRAINT report_spso_id_fk FOREIGN KEY (spso_id) REFERENCES spso (id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 );
 
 --
@@ -140,6 +143,7 @@ CREATE TABLE students(
 	student_balance INT NOT NULL CHECK (student_balance >= 0) DEFAULT 0,
     role_id BIGINT,
     password VARCHAR(255),
+    image_url VARCHAR(255),
     CONSTRAINT student_role_id_fk FOREIGN KEY (role_id) REFERENCES roles (id)
 );
 
