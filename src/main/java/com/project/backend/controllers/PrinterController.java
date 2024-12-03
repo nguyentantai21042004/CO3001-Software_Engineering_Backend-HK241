@@ -38,7 +38,7 @@ public class PrinterController {
         public ResponseEntity<ResponseObject> addPrinter(@RequestBody Printer printer,
                                                          @RequestHeader("Authorization") String authorizationHeader) throws Exception {
             // Extract token from the Authorization header
-            String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
+            String token = authorizationHeader.substring(7);
 
             // Fetch SPSO from token and set it in Printer
             SPSO spso = adminService.getUserDetailsFromToken(token);
@@ -55,7 +55,7 @@ public class PrinterController {
             @RequestBody Printer updatedPrinter,
             @RequestHeader("Authorization") String authorizationHeader) throws Exception {
         // Extract token from the Authorization header
-        String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
+        String token = authorizationHeader.substring(7);
 
         // Fetch SPSO from token
         SPSO tokenSpso = adminService.getUserDetailsFromToken(token);
@@ -122,7 +122,7 @@ public class PrinterController {
         @PreAuthorize("hasAnyRole('ADMIN', 'SPSO')")
         public ResponseEntity<ResponseObject> getPrintersBySpsoUsingToken(@RequestHeader("Authorization") String authorizationHeader) throws Exception {
             // Extract token from the Authorization header
-            String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
+            String token = authorizationHeader.substring(7);
 
             // Fetch SPSO from token
             SPSO spso = adminService.getUserDetailsFromToken(token);

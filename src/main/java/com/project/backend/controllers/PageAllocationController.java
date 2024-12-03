@@ -27,7 +27,7 @@ public class PageAllocationController {
         public ResponseEntity<ResponseObject> createPageAllocation(@RequestBody PageAllocation pageAllocation,
                                                                    @RequestHeader("Authorization") String authorizationHeader) throws Exception {
             // Extract token from the Authorization header
-            String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
+            String token = authorizationHeader.substring(7);
 
             // Fetch SPSO from token and set it in PageAllocation
             SPSO spso = adminService.getUserDetailsFromToken(token);
@@ -44,7 +44,7 @@ public class PageAllocationController {
                                                       @RequestBody PageAllocation updatedAllocation,
                                                       @RequestHeader("Authorization") String authorizationHeader) throws Exception {
             // Extract token from the Authorization header
-            String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
+            String token = authorizationHeader.substring(7);
 
             // Fetch SPSO from token and set it in PageAllocation
             SPSO spso = adminService.getUserDetailsFromToken(token);
