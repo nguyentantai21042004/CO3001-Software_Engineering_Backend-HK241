@@ -38,10 +38,15 @@ public class Printer {
     @Column(name = "last_maintenance_date")
     private LocalDateTime lastMaintenanceDate;
 
-    // New field for remaining pages
+    // New field for a4 remaining pages
     @Min(value = 0, message = "Remaining pages must be greater than or equal to 0")
-    @Column(name = "remaining_pages", nullable = false)
-    private int remainingPages;
+    @Column(name = "a4_remaining_pages", nullable = false)
+    private int a4RemainingPages;
+
+    // New field for a3 remaining pages
+    @Min(value = 0, message = "Remaining pages must be greater than or equal to 0")
+    @Column(name = "a3_remaining_pages", nullable = false)
+    private int a3RemainingPages;
 
     // Enum for status
     @Enumerated(EnumType.STRING)

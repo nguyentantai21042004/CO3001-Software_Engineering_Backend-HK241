@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,6 +65,14 @@ public class PrinterService implements IPrinterService {
     public ResponseObject addPrinter(Printer printer) {
         ResponseObject response = new ResponseObject();
         try {
+            // Validate a4_remaining_pages and a3_remaining_pages
+            if (printer.getA4RemainingPages() < 0 || printer.getA3RemainingPages() < 0) {
+                response.setStatus(HttpStatus.BAD_REQUEST);
+                response.setMessage("Remaining pages cannot be negative.");
+                return response;
+            }
+
+            // Save printer to repository
             printerRepository.save(printer);
             response.setStatus(HttpStatus.CREATED);
             response.setMessage("Printer added successfully");
@@ -78,23 +87,34 @@ public class PrinterService implements IPrinterService {
     public ResponseObject updatePrinter(Integer id, Printer updatedPrinter) {
         ResponseObject response = new ResponseObject();
         try {
+            // Validate a4_remaining_pages and a3_remaining_pages
+            if (updatedPrinter.getA4RemainingPages() < 0 || updatedPrinter.getA3RemainingPages() < 0) {
+                response.setStatus(HttpStatus.BAD_REQUEST);
+                response.setMessage("Remaining pages cannot be negative.");
+                return response;
+            }
+
+            // Check if the printer exists
             Optional<Printer> existingPrinter = printerRepository.findById(id);
             if (existingPrinter.isEmpty()) {
                 throw new DataNotFoundException("Printer not found");
             }
 
+            // Update the printer
             Printer printer = existingPrinter.get();
             printer.setName(updatedPrinter.getName());
             printer.setBrand(updatedPrinter.getBrand());
             printer.setType(updatedPrinter.getType());
             printer.setDescription(updatedPrinter.getDescription());
             printer.setSupportContact(updatedPrinter.getSupportContact());
-            printer.setLastMaintenanceDate(updatedPrinter.getLastMaintenanceDate());
+            printer.setLastMaintenanceDate(LocalDateTime.now());
             printer.setStatus(updatedPrinter.getStatus());
-            printer.setRemainingPages(updatedPrinter.getRemainingPages()); // Set remaining pages
+            printer.setA4RemainingPages(updatedPrinter.getA4RemainingPages());
+            printer.setA3RemainingPages(updatedPrinter.getA3RemainingPages());
             printer.setLocation(updatedPrinter.getLocation());
             printer.setSpso(updatedPrinter.getSpso());
 
+            // Save the updated printer
             printerRepository.save(printer);
 
             response.setStatus(HttpStatus.OK);
