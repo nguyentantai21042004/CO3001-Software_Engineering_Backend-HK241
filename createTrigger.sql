@@ -284,3 +284,161 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+--
+-- Automatically Monthly Report
+--
+
+DELIMITER $$
+
+CREATE PROCEDURE generate_monthly_report()
+BEGIN
+    DECLARE report_start_date DATE;
+    DECLARE report_end_date DATE;
+
+    -- Xác định phạm vi thời gian của tháng trước
+    SET report_start_date = DATE_FORMAT(CURRENT_DATE - INTERVAL 1 MONTH, '%Y-%m-01');
+    SET report_end_date = LAST_DAY(report_start_date);
+
+    -- Tổng hợp dữ liệu và chèn vào bảng `reports`
+    INSERT INTO reports (
+        spso_id,
+        paper_purchase_count,
+        paper_sold_count,
+        revenue_from_paper_sales,
+        printed_a4_pages,
+        printed_a3_pages,
+        print_job_count,
+        start_date,
+        end_date,
+        type
+    )
+    VALUES (
+        NULL, -- Thay NULL bằng ID của SPSO nếu cần
+        -- Tính số lượt mua giấy
+        COALESCE((SELECT COUNT(*)
+                  FROM payments
+                  WHERE transaction_date BETWEEN report_start_date AND report_end_date
+                    AND status = 'successful'), 0),
+        -- Tính số giấy đã bán
+        COALESCE((SELECT SUM(balance)
+                  FROM payments
+                  WHERE transaction_date BETWEEN report_start_date AND report_end_date
+                    AND status = 'successful'), 0),
+        -- Tính doanh thu từ việc bán giấy
+        COALESCE((SELECT SUM(amount)
+                  FROM payments
+                  WHERE transaction_date BETWEEN report_start_date AND report_end_date
+                    AND status = 'successful'), 0),
+        -- Tính số tờ A4 đã in
+        COALESCE((SELECT SUM(total_page)
+                  FROM print_jobs
+                  WHERE date BETWEEN report_start_date AND report_end_date
+                    AND status = 'successful'
+                    AND page_size = 'A4'), 0),
+        -- Tính số tờ A3 đã in
+        COALESCE((SELECT SUM(total_page)
+                  FROM print_jobs
+                  WHERE date BETWEEN report_start_date AND report_end_date
+                    AND status = 'successful'
+                    AND page_size = 'A3'), 0),
+        -- Tính số lượt in
+        COALESCE((SELECT COUNT(*)
+                  FROM print_jobs
+                  WHERE date BETWEEN report_start_date AND report_end_date
+                    AND status = 'successful'), 0),
+        report_start_date,
+        report_end_date,
+        'monthly'
+    );
+END;
+$$
+
+DELIMITER ;
+
+
+CREATE EVENT monthly_report_event
+ON SCHEDULE EVERY 1 MONTH
+STARTS (CURRENT_DATE + INTERVAL 1 DAY - INTERVAL DAY(CURRENT_DATE) DAY)
+DO
+CALL generate_monthly_report();
+
+--
+-- Automatically Yearly Report
+--
+
+DELIMITER $$
+
+CREATE PROCEDURE generate_yearly_report()
+BEGIN
+    DECLARE report_start_date DATE;
+    DECLARE report_end_date DATE;
+
+    -- Xác định phạm vi thời gian của năm trước
+    SET report_start_date = DATE_FORMAT(CURRENT_DATE - INTERVAL 1 YEAR, '%Y-01-01');
+    SET report_end_date = DATE_FORMAT(CURRENT_DATE - INTERVAL 1 YEAR, '%Y-12-31');
+
+    -- Tổng hợp dữ liệu và chèn vào bảng `reports`
+    INSERT INTO reports (
+        spso_id,
+        paper_purchase_count,
+        paper_sold_count,
+        revenue_from_paper_sales,
+        printed_a4_pages,
+        printed_a3_pages,
+        print_job_count,
+        start_date,
+        end_date,
+        type
+    )
+    VALUES (
+        NULL, -- Thay NULL bằng ID của SPSO nếu cần
+        -- Tính số lượt mua giấy
+        COALESCE((SELECT COUNT(*)
+                  FROM payments
+                  WHERE transaction_date BETWEEN report_start_date AND report_end_date
+                    AND status = 'successful'), 0),
+        -- Tính số giấy đã bán
+        COALESCE((SELECT SUM(balance)
+                  FROM payments
+                  WHERE transaction_date BETWEEN report_start_date AND report_end_date
+                    AND status = 'successful'), 0),
+        -- Tính doanh thu từ việc bán giấy
+        COALESCE((SELECT SUM(amount)
+                  FROM payments
+                  WHERE transaction_date BETWEEN report_start_date AND report_end_date
+                    AND status = 'successful'), 0),
+        -- Tính số tờ A4 đã in
+        COALESCE((SELECT SUM(total_page)
+                  FROM print_jobs
+                  WHERE date BETWEEN report_start_date AND report_end_date
+                    AND status = 'successful'
+                    AND page_size = 'A4'), 0),
+        -- Tính số tờ A3 đã in
+        COALESCE((SELECT SUM(total_page)
+                  FROM print_jobs
+                  WHERE date BETWEEN report_start_date AND report_end_date
+                    AND status = 'successful'
+                    AND page_size = 'A3'), 0),
+        -- Tính số lượt in
+        COALESCE((SELECT COUNT(*)
+                  FROM print_jobs
+                  WHERE date BETWEEN report_start_date AND report_end_date
+                    AND status = 'successful'), 0),
+        report_start_date,
+        report_end_date,
+        'yearly'
+    );
+END;
+$$
+
+DELIMITER ;
+
+
+CREATE EVENT yearly_report_event
+ON SCHEDULE EVERY 1 YEAR
+STARTS (DATE_FORMAT(CURRENT_DATE, '%Y-01-01') + INTERVAL 1 YEAR)
+DO
+CALL generate_yearly_report();
+
+

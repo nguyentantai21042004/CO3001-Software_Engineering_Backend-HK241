@@ -26,8 +26,7 @@ public class PaymentController {
             @RequestHeader("Authorization") String authorizationHeader) throws Exception {
 
         // Extract token from the Authorization header
-        String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7)
-                : authorizationHeader;
+        String token = authorizationHeader.substring(7);
 
         // Fetch the student details using the token
         Student student = studentService.getDetailFromToken(token);
@@ -68,8 +67,7 @@ public class PaymentController {
     public ResponseEntity<ResponseObject> findPaymentByStudentToken(
             @RequestHeader("Authorization") String authorizationHeader) throws Exception {
         // Extract token from the Authorization header
-        String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7)
-                : authorizationHeader;
+        String token = authorizationHeader.substring(7);
 
         // Fetch the student details using the token
         Student student = studentService.getDetailFromToken(token);
