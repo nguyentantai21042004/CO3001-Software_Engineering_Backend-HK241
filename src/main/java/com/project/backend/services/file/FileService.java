@@ -59,9 +59,8 @@ public class FileService implements IFileService {
         }
 
         @Override
-        public Page<File> getAllFiles(String token, Pageable pageable) throws Exception {
-                Student student = studentService.getDetailFromToken(token);
-                return fileRepository.findAllFilesByStudentId(student.getStudentId(), pageable);
+        public Page<File> getAllFiles(Integer studentId, Pageable pageable) throws Exception {
+                return fileRepository.findAllFilesByStudentId(studentId, pageable);
         }
 
         @Override

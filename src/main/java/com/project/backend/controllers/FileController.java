@@ -1,9 +1,11 @@
 package com.project.backend.controllers;
 
 import com.project.backend.models.File;
+import com.project.backend.models.Student;
 import com.project.backend.responses.ResponseObject;
 import com.project.backend.responses.file.FileDetailResponse;
 import com.project.backend.services.file.FileService;
+import com.project.backend.services.student.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FileController {
         private final FileService fileService;
-
+        private final StudentService studentService;
         @PostMapping
         @PreAuthorize("hasRole('STUDENT')")
         public ResponseEntity<ResponseObject> uploadFile(@RequestParam String token, @RequestParam MultipartFile file)
@@ -45,7 +47,7 @@ public class FileController {
         @GetMapping("/get-all")
         @PreAuthorize("hasRole('STUDENT')")
         public ResponseEntity<ResponseObject> getAllFiles(
-                        @RequestParam String token,
+                        @RequestHeader("Authorization") String authorizationHeader,
                         @RequestParam(defaultValue = "1") int page,
                         @RequestParam(defaultValue = "10") int limit) throws Exception {
                 if (page < 1)
@@ -55,7 +57,10 @@ public class FileController {
                                 page - 1, limit,
                                 Sort.by("id").ascending());
 
-                Page<File> filePage = fileService.getAllFiles(token, pageRequest);
+                String extractedToken = authorizationHeader.substring(7);
+                Student student = studentService.getDetailFromToken(extractedToken);
+
+                Page<File> filePage = fileService.getAllFiles(student.getStudentId(), pageRequest);
 
                 List<FileDetailResponse> fileResponseList = filePage.getContent().stream()
                                 .map(FileDetailResponse::fromFile)
