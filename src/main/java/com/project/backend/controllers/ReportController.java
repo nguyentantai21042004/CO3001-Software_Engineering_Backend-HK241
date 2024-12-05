@@ -1,6 +1,5 @@
 package com.project.backend.controllers;
 
-import com.google.firebase.database.core.Repo;
 import com.project.backend.models.Report;
 import com.project.backend.responses.ResponseObject;
 import com.project.backend.responses.report.ReportResponse;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("${api.prefix}/reports")
@@ -25,7 +23,7 @@ public class ReportController {
 
     @GetMapping("/{year}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('SPSO')")
-    public ResponseEntity<ResponseObject> getReport(@PathVariable Integer year) throws Exception{
+    public ResponseEntity<ResponseObject> getReport(@PathVariable Integer year) throws Exception {
         List<Report> reportList = reportService.getReport(year);
 
         List<ReportResponse> reportResponseList = reportList.stream()
