@@ -61,11 +61,8 @@ public class StudentService implements IStudentService {
     @Override
     public String getJWTToken(StudentLoginDTO studentLoginDTO) throws Exception {
         Optional<Student> optionalStudent = studentRepository.findByEmail(studentLoginDTO.getEmail());
-        if (optionalStudent.isEmpty()) {
-            throw new DataNotFoundException("Student not found");
-        }
+        Student existingStudent = null;
 
-        Student existingStudent = optionalStudent.get();
         Role existingRole = roleRepository.findByName(Role.STUDENT);
         if (existingRole == null) {
             throw new DataNotFoundException("Role STUDENT not found");
