@@ -55,7 +55,7 @@ public class FileController {
 
                 PageRequest pageRequest = PageRequest.of(
                                 page - 1, limit,
-                                Sort.by("id").ascending());
+                                Sort.by("id").descending());
 
                 String extractedToken = authorizationHeader.substring(7);
                 Student student = studentService.getDetailFromToken(extractedToken);
