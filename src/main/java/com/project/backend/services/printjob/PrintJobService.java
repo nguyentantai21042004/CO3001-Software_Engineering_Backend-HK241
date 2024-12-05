@@ -99,7 +99,7 @@ public class PrintJobService implements IPrintJobService {
                 .pageScale(100) // Default value
                 .pageSide(printJobCreateDTO.getPageSide())
                 .isDuplex(printJobCreateDTO.getIsDuplex())
-                .status("in progress") // Default initial status
+                .status("successful") // Default initial status
                 .date(LocalDateTime.now())
                 .submissionTime(LocalDateTime.now())
                 .completionTime(LocalDateTime.now())

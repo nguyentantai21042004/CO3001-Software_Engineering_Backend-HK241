@@ -2,10 +2,6 @@ package com.project.backend.responses.report;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.project.backend.models.Report;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -49,8 +45,9 @@ public class ReportResponse {
     @JsonProperty("type")
     private String type;
 
-    public static ReportResponse fromReport(Report report){
-        if(report == null) return null;
+    public static ReportResponse fromReport(Report report) {
+        if (report == null)
+            return null;
         return ReportResponse.builder()
                 .id(report.getId())
                 .spsoId(report.getSpsoId())
