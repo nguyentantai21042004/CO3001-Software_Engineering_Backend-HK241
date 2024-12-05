@@ -57,7 +57,7 @@ momo:
   access_key: "F8BBA842ECF85"
   secret_key: "K951B6PE1waDMi640xX08PD3vg6EkVlz"
   partner_code: "MOMO"
-  redirect_url: "http://localhost:3000/api/payment"
+  redirect_url: "https://bkprinter.vercel.app/api/payment"
   ipn_url: "https://co3001-software-engineering-internal-kw83.onrender.com/api/v1/momo/ipn"
   partner_name: "MoMo Payment"
   store_id: "Test Store"
