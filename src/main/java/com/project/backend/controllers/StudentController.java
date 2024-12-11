@@ -80,7 +80,11 @@ public class StudentController {
                         // .build());
 
                         // 3. Redirect người dùng về frontend, kèm token
-                        String frontendRedirectUrl = "https://bkprinter.vercel.app/api/auth/callback/google?token="
+                        // String frontendRedirectUrl =
+                        // "https://bkprinter.vercel.app/api/auth/callback/google?token="
+                        // + jwtToken;
+
+                        String frontendRedirectUrl = "http://localhost:3000/api/auth/callback/google?token="
                                         + jwtToken;
                         response.sendRedirect(frontendRedirectUrl);
 
