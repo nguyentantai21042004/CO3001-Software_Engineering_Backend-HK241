@@ -64,21 +64,6 @@ public class StudentController {
                         StudentLoginDTO studentLoginDTO = studentService.createDTO(tokenDataOAuth);
 
                         String jwtToken = studentService.getJWTToken(studentLoginDTO);
-
-                        System.out.println(jwtToken);
-
-                        // LoginResponse loginResponse = LoginResponse.builder()
-                        // .message("user.login.login_successfully")
-                        // .token(jwtToken)
-                        // .tokenType("Bearer")
-                        // .build();
-
-                        // return ResponseEntity.ok().body(ResponseObject.builder()
-                        // .message(loginResponse.getMessage())
-                        // .data(loginResponse)
-                        // .status(HttpStatus.OK)
-                        // .build());
-
                         // 3. Redirect người dùng về frontend, kèm token
                         // String frontendRedirectUrl =
                         // "https://bkprinter.vercel.app/api/auth/callback/google?token="
