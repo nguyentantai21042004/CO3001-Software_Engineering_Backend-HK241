@@ -9,6 +9,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 
 @Configuration
@@ -17,7 +18,7 @@ public class FirebaseConfig {
     @PostConstruct
     public void initialize() {
         try {
-            InputStream serviceAccount = new ClassPathResource("serviceAccountKey.json").getInputStream();
+            FileInputStream serviceAccount = new FileInputStream("/etc/secrets/serviceAccountKey.json");
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
