@@ -41,7 +41,7 @@ public class LocationController {
 
         // Delete location by id
         @DeleteMapping("/{id}")
-        @PreAuthorize("hasAnyRole('ADMIN'")
+        @PreAuthorize("hasAnyRole('ADMIN')")
         public ResponseEntity<ResponseObject> deleteLocation(@PathVariable Integer id) {
             ResponseObject response = locationService.deleteLocation(id);
             return ResponseEntity.status(response.getStatus()).body(response);
