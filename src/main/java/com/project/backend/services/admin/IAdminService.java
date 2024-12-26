@@ -22,5 +22,4 @@ public interface IAdminService {
     SPSO updateUser(Long userId, UpdateUserDTO updatedUserDTO) throws Exception;
 
     SPSO findSpsoById(Long id);
-
 }
