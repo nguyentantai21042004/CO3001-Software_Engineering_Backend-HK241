@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.backend.responses.AdminDetailResponse;
 import com.project.backend.responses.LoginResponse;
 import com.project.backend.responses.ResponseObject;
 import com.project.backend.responses.UserResponse;
@@ -59,7 +60,7 @@ public class AdminController {
                                 .collect(Collectors.toList());
 
                 return ResponseEntity.ok().body(ResponseObject.builder()
-                                .message("admin.spso.get_successfully")
+                                .message("Get SPSO successfully")
                                 .status(HttpStatus.OK)
                                 .data(spsos)
                                 .build());
@@ -71,7 +72,7 @@ public class AdminController {
                         BindingResult bindingResult) throws Exception {
                 if (bindingResult.hasErrors()) {
                         return ResponseEntity.badRequest().body(ResponseObject.builder()
-                                        .message("admin.login.invalid_credentials")
+                                        .message("Invalid credentials")
                                         .status(HttpStatus.BAD_REQUEST)
                                         .data(null)
                                         .build());
@@ -80,13 +81,13 @@ public class AdminController {
                 String jwtToken = adminService.login(adminLoginDTO);
 
                 LoginResponse loginResponse = LoginResponse.builder()
-                                .message("admin.login.login_successfully")
+                                .message("Login successfully")
                                 .token(jwtToken)
                                 .tokenType("Bearer")
                                 .build();
 
                 return ResponseEntity.ok().body(ResponseObject.builder()
-                                .message("admin.login.login_successfully")
+                                .message("Login successfully")
                                 .status(HttpStatus.OK)
                                 .data(loginResponse)
                                 .build());
@@ -99,7 +100,7 @@ public class AdminController {
                         BindingResult bindingResult) throws Exception {
                 if (bindingResult.hasErrors()) {
                         return ResponseEntity.badRequest().body(ResponseObject.builder()
-                                        .message("admin.spso.create_failed")
+                                        .message("Create SPSO failed")
                                         .status(HttpStatus.BAD_REQUEST)
                                         .data(null)
                                         .build());
@@ -107,7 +108,7 @@ public class AdminController {
 
                 SPSO newSPSO = adminService.createSPSO(spsoCreateDTO);
                 return ResponseEntity.ok().body(ResponseObject.builder()
-                                .message("admin.spso.create_successfully")
+                                .message("Create SPSO successfully")
                                 .status(HttpStatus.OK)
                                 .data(UserResponse.fromSPSO(newSPSO))
                                 .build());
@@ -133,5 +134,23 @@ public class AdminController {
                                 .data(UserResponse.fromSPSO(updatedUser))
                                 .status(HttpStatus.OK)
                                 .build());
+        }
+
+        // Detail
+        @GetMapping("/detail/me")
+        @PreAuthorize("hasRole('ADMIN') or hasRole('SPSO')")
+        public ResponseEntity<ResponseObject> detail(
+                        @RequestHeader("Authorization") String authorizationHeader) throws Exception {
+                String extractedToken = authorizationHeader.substring(7);
+                SPSO user = adminService.getUserDetailsFromToken(extractedToken);
+
+                SPSO spso = adminService.findSpsoById(Long.valueOf(user.getId()));
+
+                return ResponseEntity.ok().body(
+                                ResponseObject.builder()
+                                                .data(AdminDetailResponse.fromSPSO(spso))
+                                                .message("Get detail successfully")
+                                                .status(HttpStatus.OK)
+                                                .build());
         }
 }
