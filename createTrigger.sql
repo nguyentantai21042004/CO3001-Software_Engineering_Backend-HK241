@@ -441,4 +441,49 @@ STARTS (DATE_FORMAT(CURRENT_DATE, '%Y-01-01') + INTERVAL 1 YEAR)
 DO
 CALL generate_yearly_report();
 
+CALL generate_monthly_report();
+CALL generate_yearly_report();
 
+select * from reports;
+select * from payments;
+select * from print_jobs;
+
+--
+-- Update printer status when it run out of paper
+--
+
+DELIMITER $$
+CREATE TRIGGER set_printer_inactive_when_no_paper
+AFTER UPDATE ON printers
+FOR EACH ROW
+BEGIN
+    IF NEW.a4_remaining_pages = 0 AND NEW.a3_remaining_pages = 0 THEN
+        UPDATE printers
+        SET status = 'inactive'
+        WHERE id = NEW.id;
+    END IF;
+END$$
+DELIMITER ;
+
+--
+-- Subtract printer paper when create a print job
+--
+
+DELIMITER $$
+CREATE TRIGGER update_printer_paper_after_insert
+AFTER INSERT ON print_jobs
+FOR EACH ROW
+BEGIN
+    IF NEW.status = 'successful' THEN
+        IF NEW.page_size = 'A4' THEN
+            UPDATE printers
+            SET a4_remaining_pages = a4_remaining_pages - NEW.total_page
+            WHERE id = NEW.printer_id;
+        ELSEIF NEW.page_size = 'A3' THEN
+            UPDATE printers
+            SET a3_remaining_pages = a3_remaining_pages - NEW.total_page
+            WHERE id = NEW.printer_id;
+        END IF;
+    END IF;
+END$$
+DELIMITER ;
