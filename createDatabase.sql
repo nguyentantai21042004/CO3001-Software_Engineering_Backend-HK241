@@ -13,6 +13,32 @@ CREATE TABLE file_formats(
 );
 
 --
+-- Table structure for table roles
+--
+
+CREATE TABLE roles (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE
+);
+
+--
+-- Table structure for table students
+--
+
+CREATE TABLE students(
+	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	full_name VARCHAR(255) NOT NULL,
+	email VARCHAR(255) NOT NULL UNIQUE,
+	join_date DATETIME NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+	last_login DATETIME NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+	student_balance INT NOT NULL CHECK (student_balance >= 0) DEFAULT 0,
+    role_id BIGINT,
+    password VARCHAR(255),
+    image_url VARCHAR(255),
+    CONSTRAINT student_role_id_fk FOREIGN KEY (role_id) REFERENCES roles (id)
+);
+
+--
 -- Table structure for table files
 --
 
@@ -30,15 +56,6 @@ CREATE TABLE files(
 	CONSTRAINT file_student_id FOREIGN KEY (student_id) REFERENCES students (id)
 		ON DELETE CASCADE
         ON UPDATE CASCADE
-);
-
---
--- Table structure for table roles
---
-
-CREATE TABLE roles (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL UNIQUE
 );
 
 --
@@ -105,7 +122,8 @@ CREATE TABLE locations(
 	name VARCHAR(10) NOT NULL,
 	campus CHAR(3) NOT NULL CHECK (campus IN ('cs1', 'cs2')),
 	floor TINYINT NOT NULL,
-	room_number SMALLINT NOT NULL
+	room_number SMALLINT NOT NULL,
+    CONSTRAINT unique_location UNIQUE (name, campus, floor, room_number)
 );
 
 --
@@ -128,23 +146,6 @@ CREATE TABLE printers(
 	CONSTRAINT printer_location_id_fk FOREIGN KEY (location_id) REFERENCES locations (id),
 	CONSTRAINT printer_spso_id_fk FOREIGN KEY (spso_id) REFERENCES spso (id)
 		ON UPDATE CASCADE
-);
-
---
--- Table structure for table students
---
-
-CREATE TABLE students(
-	id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	full_name VARCHAR(255) NOT NULL,
-	email VARCHAR(255) NOT NULL UNIQUE,
-	join_date DATETIME NOT NULL DEFAULT (CURRENT_TIMESTAMP),
-	last_login DATETIME NOT NULL DEFAULT (CURRENT_TIMESTAMP),
-	student_balance INT NOT NULL CHECK (student_balance >= 0) DEFAULT 0,
-    role_id BIGINT,
-    password VARCHAR(255),
-    image_url VARCHAR(255),
-    CONSTRAINT student_role_id_fk FOREIGN KEY (role_id) REFERENCES roles (id)
 );
 
 --
@@ -185,6 +186,7 @@ CREATE TABLE print_jobs(
 	total_page INT CHECK (total_page > 0),
 	total_cost INT CHECK (total_cost > 0),
 	printer_id INT,
+    is_duplex TINYINT(1) default 0,
 	CONSTRAINT print_job_student_id_fk FOREIGN KEY (student_id) REFERENCES students (id),
 	CONSTRAINT print_job_file_id_fk FOREIGN KEY (file_id) REFERENCES files (id)
 		ON DELETE SET NULL,
@@ -196,19 +198,19 @@ CREATE TABLE print_jobs(
 -- Table structure for table tokens
 --
 
-CREATE TABLE tokens (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    token VARCHAR(255) NOT NULL,  -- Access token hoặc refresh token
-    token_type VARCHAR(50) NOT NULL,  -- Loại token (access hoặc refresh)
-    student_id INT NOT NULL,  -- ID của sinh viên sở hữu token
-    issued_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Thời điểm token được cấp
-    expires_at TIMESTAMP,  -- Thời điểm token hết hạn
-    revoked BOOLEAN DEFAULT FALSE,  -- Trạng thái thu hồi token
-    device_info VARCHAR(255),  -- Thông tin thiết bị đăng nhập
-    ip_address VARCHAR(45),  -- Địa chỉ IP đăng nhập
-    is_mobile TINYINT(1) DEFAULT 0,  -- Trạng thái đăng nhập trên thiết bị di động
-    refresh_token VARCHAR(255) NOT NULL,  -- Refresh token
-    refresh_expiration_date TIMESTAMP,  -- Thời gian hết hạn refresh token
-    role VARCHAR(50),
-    FOREIGN KEY (student_id) REFERENCES students(id)  -- Liên kết với bảng students
-);
+-- CREATE TABLE tokens (
+--     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--     token VARCHAR(255) NOT NULL,  -- Access token hoặc refresh token
+--     token_type VARCHAR(50) NOT NULL,  -- Loại token (access hoặc refresh)
+--     student_id INT NOT NULL,  -- ID của sinh viên sở hữu token
+--     issued_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- Thời điểm token được cấp
+--     expires_at TIMESTAMP,  -- Thời điểm token hết hạn
+--     revoked BOOLEAN DEFAULT FALSE,  -- Trạng thái thu hồi token
+--     device_info VARCHAR(255),  -- Thông tin thiết bị đăng nhập
+--     ip_address VARCHAR(45),  -- Địa chỉ IP đăng nhập
+--     is_mobile TINYINT(1) DEFAULT 0,  -- Trạng thái đăng nhập trên thiết bị di động
+--     refresh_token VARCHAR(255) NOT NULL,  -- Refresh token
+--     refresh_expiration_date TIMESTAMP,  -- Thời gian hết hạn refresh token
+--     role VARCHAR(50),
+--     FOREIGN KEY (student_id) REFERENCES students(id)  -- Liên kết với bảng students
+-- );
