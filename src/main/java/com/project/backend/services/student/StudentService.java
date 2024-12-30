@@ -49,6 +49,10 @@ public class StudentService implements IStudentService {
             throw new JWTException("Claims is null");
         }
 
+        if (!claims.get("email", String.class).contains("@hcmut.edu.vn")) {
+            throw new JWTException("Email is not valid");
+        }
+
         return StudentLoginDTO.builder()
                 .email(claims.get("email", String.class))
                 .name(claims.get("name", String.class))
