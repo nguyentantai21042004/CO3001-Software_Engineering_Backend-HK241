@@ -67,14 +67,25 @@ public class StudentController {
                         // 3. Redirect người dùng về frontend, kèm token
                         String frontendRedirectUrl = "https://bkprinter.vercel.app/api/auth/callback/google?token="
                                         + jwtToken;
-                        
-                        // String frontendRedirectUrl = "http://localhost:3000/api/auth/callback/google?token="
-                        //                 + jwtToken;
+
+                        // String frontendRedirectUrl =
+                        // "http://localhost:3000/api/auth/callback/google?token="
+                        // + jwtToken;
                         response.sendRedirect(frontendRedirectUrl);
 
                         return ResponseEntity.ok().body(ResponseObject.builder()
                                         .message("Redirecting to frontend")
                                         .status(HttpStatus.OK)
+                                        .data(null)
+                                        .build());
+                } catch (JWTException e) {
+                        String frontendRedirectUrl = "https://bkprinter.vercel.app/api/error?message="
+                                        + e.getMessage();
+                        response.sendRedirect(frontendRedirectUrl);
+
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseObject.builder()
+                                        .message(e.getMessage())
+                                        .status(HttpStatus.UNAUTHORIZED)
                                         .data(null)
                                         .build());
                 } catch (Exception e) {
